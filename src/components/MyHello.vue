@@ -1,14 +1,19 @@
-<script setup>
-alert('hello world!')
+<script>
+export default {
+  data() {
+    return {
+      count: 0,
+    }
+  },
+  methods: {
+    increment() {
+      this.count++
+    }
+  }
+}
 </script>
 
 <template>
-  <p class="text">это мой компонент</p>
-  <button>открыть</button>
+  <h1>{{ count }}</h1>
+  <button @click="increment">+</button>
 </template>
-
-<style scoped>
-.text {
-  background: red;
-}
-</style>
