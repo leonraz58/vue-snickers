@@ -1,14 +1,13 @@
 <script setup>
-import MyHello from '@/components/MyHello.vue'
+import Header from '@/components/Header.vue'
 </script>
 
 <template>
-  <div class="mb-20 bg-amber-100">
-  <MyHello title="Кроссовки Puma" :price="9500" :isAdded="true">
-    <button>Добавить</button>
-  </MyHello>
+  <div class="w-4/5 m-auto bg-white h-screen rounded-xl shadow-xl mt-14">
+    <Header/>
+
+    <h1>Text</h1>
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
