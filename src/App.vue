@@ -2,14 +2,30 @@
 import Header from '@/components/Header.vue'
 import CardList from '@/components/CardList.vue'
 import Drawer from '@/components/Drawer.vue'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import axios from 'axios'
 
 const items = ref([])
 
+const sortBy = ref('')
+const searchQuery = ref('')
+
+const onChangeSelect = (event) => {
+  sortBy.value = event.target.value
+}
+
 onMounted(async () => {
   try {
     const { data } = await axios.get('https://604781a0efa572c1.mokky.dev/items')
+    items.value = data
+  } catch (e) {
+    console.log(e)
+  }
+})
+
+watch(sortBy, async () => {
+  try {
+    const { data } = await axios.get('https://604781a0efa572c1.mokky.dev/items?sortBy=' + sortBy.value)
     items.value = data
   } catch (e) {
     console.log(e)
@@ -29,10 +45,10 @@ onMounted(async () => {
         <h2 class="text-3xl font-bold mb-8">Все кроссовки</h2>
 
         <div class="flex gap-4">
-          <select class="py-2 px-3 border rounded-md outline-none">
-            <option>По названию</option>
-            <option>По цене (дешевые)</option>
-            <option>По цене (дорогие)</option>
+          <select @change="onChangeSelect" class="py-2 px-3 border rounded-md outline-none">
+            <option value="name">По названию</option>
+            <option value="price">По цене (дешевые)</option>
+            <option value="-price">По цене (дорогие)</option>
           </select>
 
           <div class="relative">
