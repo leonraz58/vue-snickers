@@ -2,35 +2,44 @@
 import Header from '@/components/Header.vue'
 import CardList from '@/components/CardList.vue'
 import Drawer from '@/components/Drawer.vue'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import axios from 'axios'
 
 const items = ref([])
 
-const sortBy = ref('')
-const searchQuery = ref('')
+const filters = reactive({
+  sortBy: 'title',
+  searchQuery: ''
+})
 
 const onChangeSelect = (event) => {
-  sortBy.value = event.target.value
+  filters.sortBy = event.target.value
 }
 
-onMounted(async () => {
-  try {
-    const { data } = await axios.get('https://604781a0efa572c1.mokky.dev/items')
-    items.value = data
-  } catch (e) {
-    console.log(e)
-  }
-})
+const onChangeSearchInput = (event) => {
+  filters.searchQuery = event.target.value
+}
 
-watch(sortBy, async () => {
+const fetchItems = async () => {
   try {
-    const { data } = await axios.get('https://604781a0efa572c1.mokky.dev/items?sortBy=' + sortBy.value)
+    const params = {
+      sortBy: filters.sortBy,
+    }
+
+    if (filters.searchQuery) {
+      params.title = `*${filters.searchQuery}*`
+    }
+
+    const { data } = await axios.get('https://604781a0efa572c1.mokky.dev/items', {params})
     items.value = data
   } catch (e) {
     console.log(e)
   }
-})
+}
+
+onMounted(fetchItems)
+
+watch(filters, fetchItems)
 
 </script>
 
@@ -54,6 +63,7 @@ watch(sortBy, async () => {
           <div class="relative">
             <img class="absolute left-4 top-3" src="/search.svg" alt="поиск" />
             <input
+              @input="onChangeSearchInput"
               class="border rounded-md py-2 pl-11 pr-4 outline-none focus: border-gray-400"
               placeholder="Поиск..."
             />
