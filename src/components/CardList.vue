@@ -23,7 +23,7 @@ const onClickFavourite = () => {
       :title="item.title"
       :price="item.price"
       :is-added="true"
-      :is-favorite="true"
+      :is-favorite="item.isFavorite"
       :onClickAdd="onClickAdd"
       :on-click-favorite="onClickFavourite"
     />
