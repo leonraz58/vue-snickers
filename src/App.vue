@@ -2,7 +2,7 @@
 import Header from '@/components/Header.vue'
 import CardList from '@/components/CardList.vue'
 import Drawer from '@/components/Drawer.vue'
-import { onMounted, reactive, ref, watch } from 'vue'
+import { onMounted, provide, reactive, ref, watch } from 'vue'
 import axios from 'axios'
 
 const items = ref([])
@@ -44,6 +44,10 @@ const fetchFavourites = async () => {
   }
 }
 
+const addToFavorite = async (item) => {
+  item.isFavorite = !item.isFavorite
+}
+
 const fetchItems = async () => {
   try {
     const params = {
@@ -72,6 +76,7 @@ onMounted(async () => {
 
 watch(filters, fetchItems)
 
+provide('addToFavorite', addToFavorite)
 </script>
 
 <template>
