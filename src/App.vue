@@ -23,7 +23,7 @@ const onChangeSearchInput = (event) => {
 const fetchFavourites = async () => {
   try {
 
-    const { data: favorites } = await axios.get('https://604781a0efa572c1.mokky.dev/favorites')
+    const { data: favorites } = await axios.get('https://f0a3cdde629e5968.mokky.dev/favorites')
     items.value = items.value.map(item => {
       const favorite = favorites.find(favorite => favorite.itemId === item.id)
 
@@ -55,13 +55,14 @@ const addToFavorite = async (item) => {
         itemId: item.id
       }
 
-      const { data } = await axios.post('https://604781a0efa572c1.mokky.dev/favorites', obj)
-
       item.isFavorite = true
+
+      const { data } = await axios.post('https://f0a3cdde629e5968.mokky.dev/favorites', obj)
+
       item.favoriteId = data.id
     } else {
-      await axios.delete(`https://604781a0efa572c1.mokky.dev/favorites/${item.favoriteId}`)
       item.isFavorite = false
+      await axios.delete(`https://f0a3cdde629e5968.mokky.dev/favorites/${item.favoriteId}`)
       item.favoriteId = null
     }
 
