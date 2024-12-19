@@ -19,6 +19,7 @@ const openDrawer = () => {
 }
 
 provide('cart', {
+  cart,
   closeDrawer,
   openDrawer,
 })
