@@ -2,13 +2,16 @@
 import Header from '@/components/Header.vue'
 import CardList from '@/components/CardList.vue'
 import Drawer from '@/components/Drawer.vue'
-import { onMounted, provide, reactive, ref, watch } from 'vue'
+import { computed, onMounted, provide, reactive, ref, watch } from 'vue'
 import axios from 'axios'
 
 const items = ref([])
 const cart = ref([])
 
 const drawerOpen = ref(false)
+
+const totalPrice = computed(() => cart.value.reduce((acc, item) => acc + item.price, 0))
+const vatPrice = computed(()=>Math.round(totalPrice.value * 5 / 100))
 
 const closeDrawer = () => {
   drawerOpen.value = false
@@ -138,10 +141,10 @@ provide('cart', {
 </script>
 
 <template>
-    <Drawer v-if="drawerOpen"/>
+    <Drawer v-if="drawerOpen" :total-price="totalPrice" :vatPrice="vatPrice"/>
 
   <div class="w-4/5 m-auto bg-white rounded-xl shadow-xl mt-14">
-    <Header @open-driver="openDrawer" />
+    <Header :total-price="totalPrice" @open-driver="openDrawer" />
 
     <div class="p-10">
       <div class="flex justify-between items-center">

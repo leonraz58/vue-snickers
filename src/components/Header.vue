@@ -1,4 +1,7 @@
 <script setup>
+defineProps({
+  totalPrice: Number
+})
 const emit = defineEmits(['openDriver'])
 </script>
 
@@ -15,7 +18,7 @@ const emit = defineEmits(['openDriver'])
     <ul class="flex items-center gap-10">
       <li @click = "() => emit('openDriver')" class="flex items-center cursor-pointer gap-3 text-gray-500 hover:text-black">
         <img src="/cart.svg" alt="Cart" />
-        <b>1205 р.</b>
+        <b> {{ totalPrice }}</b>
       </li>
 
       <li class="flex items-center cursor-pointer gap-3 text-gray-500 hover:text-black">
