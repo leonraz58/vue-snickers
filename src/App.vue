@@ -44,8 +44,30 @@ const fetchFavourites = async () => {
   }
 }
 
+// const addToFavorite = async (item) => {
+//   item.isFavorite = !item.isFavorite
+// }
+
 const addToFavorite = async (item) => {
-  item.isFavorite = !item.isFavorite
+  try {
+    if (!item.isFavorite) {
+      const obj = {
+        itemId: item.id
+      }
+
+      const { data } = await axios.post('https://604781a0efa572c1.mokky.dev/favorites', obj)
+
+      item.isFavorite = true
+      item.favoriteId = data.id
+    } else {
+      await axios.delete(`https://604781a0efa572c1.mokky.dev/favorites/${item.favoriteId}`)
+      item.isFavorite = false
+      item.favoriteId = null
+    }
+
+  } catch (err) {
+    console.log(err)
+  }
 }
 
 const fetchItems = async () => {
