@@ -6,6 +6,7 @@ import { onMounted, provide, reactive, ref, watch } from 'vue'
 import axios from 'axios'
 
 const items = ref([])
+const cart = ref([])
 
 const drawerOpen = ref(false)
 
@@ -17,7 +18,7 @@ const openDrawer = () => {
   drawerOpen.value = true
 }
 
-provide('cartActions', {
+provide('cart', {
   closeDrawer,
   openDrawer,
 })
@@ -26,6 +27,17 @@ const filters = reactive({
   sortBy: 'title',
   searchQuery: ''
 })
+
+const addToCart = (item) => {
+  if (!item.isAdded) {
+    cart.value.push(item)
+    item.isAdded = true
+  } else {
+    cart.value.splice(cart.value.indexOf(item), 1)
+    item.isAdded = false
+  }
+  console.log(cart)
+}
 
 const onChangeSelect = (event) => {
   filters.sortBy = event.target.value
@@ -141,7 +153,7 @@ watch(filters, fetchItems)
       </div>
 
       <div class="mt-10">
-        <CardList :items="items" @add-to-favorite="addToFavorite" />
+        <CardList :items="items" @add-to-favorite="addToFavorite" @add-to-cart="addToCart"/>
       </div>
     </div>
   </div>
