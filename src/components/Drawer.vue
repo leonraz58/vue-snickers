@@ -2,14 +2,38 @@
 import DrawerHead from '@/components/DrawerHead.vue'
 import CartItemList from '@/components/CartItemList.vue'
 import InfoBlock from '@/components/InfoBlock.vue'
+import axios from 'axios'
+import { computed, inject, ref } from 'vue'
 
-const emit = defineEmits(['createOrder'])
 
-defineProps({
+const props = defineProps({
   totalPrice: Number,
   vatPrice: Number,
-  buttonDisabled: Boolean,
 })
+
+const {cart, closeDrawer} = inject('cart')
+
+const isCreatingOrder = ref(false)
+
+const createOrder = async () => {
+  try {
+    isCreatingOrder.value = true
+    const { data } = await axios.post('https://f0a3cdde629e5968.mokky.dev/orders', {
+      items: cart.value,
+      totalPrice: props.totalPrice,
+    })
+
+    cart.value = []
+
+    return data
+  } catch (err) {
+    console.log(err)
+  } finally {
+    isCreatingOrder.value = false
+  }
+}
+const cartIsEmpty = computed(() => cart.value.length === 0)
+const cartButtonDisabled = computed(() => isCreatingOrder.value || cartIsEmpty.value)
 </script>
 
 <template>
@@ -42,8 +66,8 @@ defineProps({
 
         <button
           class="mt-4 bg-lime-500 w-full rounded-xl py-3 text-white disabled:bg-slate-300 hover:bg-lime-600 active:bg-lime-700 cursor-pointer"
-          :disabled="buttonDisabled"
-          @click="() => emit('createOrder')"
+          :disabled="cartButtonDisabled"
+          @click="createOrder"
         >
           Оформить заказ
         </button>
