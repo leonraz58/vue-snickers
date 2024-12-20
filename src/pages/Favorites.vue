@@ -20,5 +20,5 @@ onMounted(async () => {
 <template>
   <h1>Мои закладки</h1>
 
-  <CardList :items="favorites"/>
+  <CardList is-favorites :items="favorites"/>
 </template>
