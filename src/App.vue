@@ -16,7 +16,7 @@ const vatPrice = computed(() => Math.round((totalPrice.value * 5) / 100))
 
 const cartIsEmpty = computed(() => cart.value.length === 0)
 
-const cartButtonDisabled = computed(()=>isCreatingOrder.value || cartIsEmpty.value)
+const cartButtonDisabled = computed(() => isCreatingOrder.value || cartIsEmpty.value)
 
 const closeDrawer = () => {
   drawerOpen.value = false
@@ -143,8 +143,15 @@ const fetchItems = async () => {
 }
 
 onMounted(async () => {
+  const localCart = localStorage.getItem('cart')
+  cart.value = localCart ? JSON.parse(localCart) : []
+
   await fetchItems()
   await fetchFavourites()
+
+  items.value = items.value.map((item) => ({
+    ...item, isAdded: cart.value.some((cartItem) => cartItem.id === item.id)
+  }))
 })
 
 watch(filters, fetchItems)
@@ -152,10 +159,18 @@ watch(filters, fetchItems)
 watch(cart, () => {
   items.value = items.value.map((item) => ({
     ...item,
-    isAdded: false
+    isAdded: false,
   }))
   console.log('watch cart')
 })
+
+watch(
+  cart,
+  () => {
+    localStorage.setItem('cart', JSON.stringify(cart.value))
+  },
+  { deep: true },
+)
 
 provide('cart', {
   cart,
@@ -167,11 +182,12 @@ provide('cart', {
 </script>
 
 <template>
-  <Drawer v-if="drawerOpen"
-          :total-price="totalPrice"
-          :vatPrice="vatPrice"
-          @create-order="createOrder"
-          :buttonDisabled="cartButtonDisabled"
+  <Drawer
+    v-if="drawerOpen"
+    :total-price="totalPrice"
+    :vatPrice="vatPrice"
+    @create-order="createOrder"
+    :buttonDisabled="cartButtonDisabled"
   />
 
   <div class="w-4/5 m-auto bg-white rounded-xl shadow-xl mt-14">
