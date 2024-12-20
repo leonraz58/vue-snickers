@@ -3,7 +3,6 @@ import Header from '@/components/Header.vue'
 import Drawer from '@/components/Drawer.vue'
 import { computed, provide, ref, watch } from 'vue'
 import axios from 'axios'
-import Home from '@/pages/Home.vue'
 
 const cart = ref([])
 const isCreatingOrder = ref(false)

@@ -86,7 +86,7 @@ const fetchItems = async () => {
       params.title = `*${filters.searchQuery}*`
     }
 
-    const { data } = await axios.get('https://604781a0efa572c1.mokky.dev/items', { params })
+    const { data } = await axios.get('https://f0a3cdde629e5968.mokky.dev/items', { params })
     items.value = data.map((obj) => ({
       ...obj,
       isFavorite: false,
