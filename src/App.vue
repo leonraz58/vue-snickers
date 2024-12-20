@@ -7,11 +7,16 @@ import axios from 'axios'
 
 const items = ref([])
 const cart = ref([])
+const isCreatingOrder = ref(false)
 
 const drawerOpen = ref(false)
 
 const totalPrice = computed(() => cart.value.reduce((acc, item) => acc + item.price, 0))
 const vatPrice = computed(() => Math.round((totalPrice.value * 5) / 100))
+
+const cartIsEmpty = computed(() => cart.value.length === 0)
+
+const cartButtonDisabled = computed(()=>isCreatingOrder.value || cartIsEmpty.value)
 
 const closeDrawer = () => {
   drawerOpen.value = false
@@ -38,6 +43,7 @@ const removeFromCart = (item) => {
 
 const createOrder = async () => {
   try {
+    isCreatingOrder.value = true
     const { data } = await axios.post('https://f0a3cdde629e5968.mokky.dev/orders', {
       items: cart.value,
       totalPrice: totalPrice.value,
@@ -48,6 +54,8 @@ const createOrder = async () => {
     return data
   } catch (err) {
     console.log(err)
+  } finally {
+    isCreatingOrder.value = false
   }
 }
 
@@ -141,6 +149,14 @@ onMounted(async () => {
 
 watch(filters, fetchItems)
 
+watch(cart, () => {
+  items.value = items.value.map((item) => ({
+    ...item,
+    isAdded: false
+  }))
+  console.log('watch cart')
+})
+
 provide('cart', {
   cart,
   closeDrawer,
@@ -155,6 +171,7 @@ provide('cart', {
           :total-price="totalPrice"
           :vatPrice="vatPrice"
           @create-order="createOrder"
+          :buttonDisabled="cartButtonDisabled"
   />
 
   <div class="w-4/5 m-auto bg-white rounded-xl shadow-xl mt-14">
