@@ -2,6 +2,8 @@
 import DrawerHead from '@/components/DrawerHead.vue'
 import CartItemList from '@/components/CartItemList.vue'
 
+const emit = defineEmits(['createOrder'])
+
 defineProps({
   totalPrice: Number,
   vatPrice: Number,
@@ -28,7 +30,8 @@ defineProps({
       </div>
 
       <button class="mt-4 bg-lime-500 w-full rounded-xl py-3 text-white disabled:bg-slate-300 hover:bg-lime-600 active:bg-lime-700 cursor-pointer"
-              :disabled="false"
+              :disabled="!totalPrice"
+              @click="() => emit('createOrder')"
       >
         Оформить заказ
       </button>

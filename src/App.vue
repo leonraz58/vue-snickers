@@ -11,7 +11,7 @@ const cart = ref([])
 const drawerOpen = ref(false)
 
 const totalPrice = computed(() => cart.value.reduce((acc, item) => acc + item.price, 0))
-const vatPrice = computed(()=>Math.round(totalPrice.value * 5 / 100))
+const vatPrice = computed(() => Math.round((totalPrice.value * 5) / 100))
 
 const closeDrawer = () => {
   drawerOpen.value = false
@@ -21,10 +21,9 @@ const openDrawer = () => {
   drawerOpen.value = true
 }
 
-
 const filters = reactive({
   sortBy: 'title',
-  searchQuery: ''
+  searchQuery: '',
 })
 
 const addToCart = (item) => {
@@ -37,6 +36,20 @@ const removeFromCart = (item) => {
   item.isAdded = false
 }
 
+const createOrder = async () => {
+  try {
+    const { data } = await axios.post('https://f0a3cdde629e5968.mokky.dev/orders', {
+      items: cart.value,
+      totalPrice: totalPrice.value,
+    })
+
+    cart.value = []
+
+    return data
+  } catch (err) {
+    console.log(err)
+  }
+}
 
 const onClickAddPlus = (item) => {
   if (!item.isAdded) {
@@ -57,10 +70,9 @@ const onChangeSearchInput = (event) => {
 
 const fetchFavourites = async () => {
   try {
-
     const { data: favorites } = await axios.get('https://f0a3cdde629e5968.mokky.dev/favorites')
-    items.value = items.value.map(item => {
-      const favorite = favorites.find(favorite => favorite.itemId === item.id)
+    items.value = items.value.map((item) => {
+      const favorite = favorites.find((favorite) => favorite.itemId === item.id)
 
       if (!favorite) {
         return item
@@ -69,7 +81,7 @@ const fetchFavourites = async () => {
       return {
         ...item,
         isFavorite: true,
-        favoriteId: favorite.id
+        favoriteId: favorite.id,
       }
     })
 
@@ -83,7 +95,7 @@ const addToFavorite = async (item) => {
   try {
     if (!item.isFavorite) {
       const obj = {
-        itemId: item.id
+        itemId: item.id,
       }
 
       item.isFavorite = true
@@ -96,7 +108,6 @@ const addToFavorite = async (item) => {
       await axios.delete(`https://f0a3cdde629e5968.mokky.dev/favorites/${item.favoriteId}`)
       item.favoriteId = null
     }
-
   } catch (err) {
     console.log(err)
   }
@@ -112,7 +123,7 @@ const fetchItems = async () => {
       params.title = `*${filters.searchQuery}*`
     }
 
-    const { data } = await axios.get('https://604781a0efa572c1.mokky.dev/items', {params})
+    const { data } = await axios.get('https://604781a0efa572c1.mokky.dev/items', { params })
     items.value = data.map((obj) => ({
       ...obj,
       isFavorite: false,
@@ -135,13 +146,16 @@ provide('cart', {
   closeDrawer,
   openDrawer,
   addToCart,
-  removeFromCart
+  removeFromCart,
 })
-
 </script>
 
 <template>
-    <Drawer v-if="drawerOpen" :total-price="totalPrice" :vatPrice="vatPrice"/>
+  <Drawer v-if="drawerOpen"
+          :total-price="totalPrice"
+          :vatPrice="vatPrice"
+          @create-order="createOrder"
+  />
 
   <div class="w-4/5 m-auto bg-white rounded-xl shadow-xl mt-14">
     <Header :total-price="totalPrice" @open-driver="openDrawer" />
@@ -169,7 +183,7 @@ provide('cart', {
       </div>
 
       <div class="mt-10">
-        <CardList :items="items" @add-to-favorite="addToFavorite" @add-to-cart="onClickAddPlus"/>
+        <CardList :items="items" @add-to-favorite="addToFavorite" @add-to-cart="onClickAddPlus" />
       </div>
     </div>
   </div>
